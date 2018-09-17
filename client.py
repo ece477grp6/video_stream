@@ -1,8 +1,7 @@
+import io
 import socket
 import struct
 from PIL import Image
-import cv2
-import numpy as np
 
 # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
 # all interfaces)
@@ -28,11 +27,9 @@ try:
         # processing on it
         image_stream.seek(0)
         image = Image.open(image_stream)
-        cv_image = np.array(image)
-        cv2.imshow('Stream', cv_image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
+        print('Image is %dx%d' % image.size)
+        image.verify()
+        print('Image is verified')
 finally:
     connection.close()
     server_socket.close()
