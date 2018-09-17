@@ -28,7 +28,7 @@ def write(self, buf):
 
 
 client_socket = socket.socket()
-client_socket.connect(('my_server', 8000))
+client_socket.connect(('128.46.96.250', 8000))
 connection = client_socket.makefile('wb')
 try:
     output = SplitFrames(connection)
