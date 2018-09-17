@@ -7,9 +7,9 @@ import picamera
 
 class SplitFrames(object):
     def __init__(self, connection):
-       self.connection = connection
-       self.stream = io.BytesIO()
-       self.count = 0
+        self.connection = connection
+        self.stream = io.BytesIO()
+        self.count = 0
 
 
 def write(self, buf):
@@ -44,6 +44,6 @@ try:
 finally:
     connection.close()
     client_socket.close()
-   finish = time.time()
+    finish = time.time()
 print('Sent %d images in %d seconds at %.2ffps' % (
     output.count, finish-start, output.count / (finish-start)))
