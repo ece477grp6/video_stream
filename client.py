@@ -5,7 +5,8 @@ import struct
 import time
 import pickle
 import zlib
-
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect(('10.186.44.62', 8485))
 connection = client_socket.makefile('wb')

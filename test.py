@@ -15,3 +15,4 @@ import cv2
 # open a pointer to the video stream and start the FPS timer
 stream = cv2.VideoCapture(0)
 fps = FPS().start()
+while True
