@@ -7,7 +7,7 @@ import pickle
 import zlib
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(('127.0.0.1', 8485))
+client_socket.connect(('10.186.44.62', 8485))
 connection = client_socket.makefile('wb')
 camera = PiCamera()
 rawCapture = PiRGBArray(camera)
