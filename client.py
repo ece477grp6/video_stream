@@ -28,7 +28,7 @@ img_counter = 0
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
 while True:
-    ret, frame = cam.read()
+    # ret, frame = cam.read()
     result, frame = cv2.imencode('.jpg', image, encode_param)
 #    data = zlib.compress(pickle.dumps(frame, 0))
     data = pickle.dumps(frame, 0)
