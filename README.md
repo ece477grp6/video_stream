@@ -1,0 +1,2 @@
+#Raspi Camera streaming using socket and opencv to a python client
+Source code used is from [Kittinan](https://gist.github.com/kittinan/e7ecefddda5616eab2765fdb2affed1b) and modified to suite raspicamera

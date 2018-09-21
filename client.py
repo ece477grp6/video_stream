@@ -29,4 +29,5 @@ while True:
 
     print("{}: {}".format(img_counter, size))
     client_socket.sendall(struct.pack(">L", size) + data)
+    cv2.imshow('ImageWindow', image)
     img_counter += 1
