@@ -32,7 +32,7 @@ while True:
     size = len(data)
 
     print("{}: {}".format(img_counter, size))
-    client_socket.sendall(struct.pack(">L", size) + data)
+    # client_socket.sendall(struct.pack(">L", size) + data)
     img_counter += 1
 
 cam.release()
