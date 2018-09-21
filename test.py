@@ -1,18 +1,20 @@
-
 # import the necessary packages
-from imutils.video import FPS
-import numpy as np
-import argparse
-import imutils
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import time
 import cv2
 
-# construct the argument parse and parse the arguments
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-v", "--video", required=True,
-#                 help="path to input video file")
-# args = vars(ap.parse_args())
+# initialize the camera and grab a reference to the raw camera capture
+camera = PiCamera()
+rawCapture = PiRGBArray(camera)
 
-# open a pointer to the video stream and start the FPS timer
-stream = cv2.VideoCapture(0)
-fps = FPS().start()
-while True
+# allow the camera to warmup
+time.sleep(0.1)
+
+# grab an image from the camera
+camera.capture(rawCapture, format="bgr")
+image = rawCapture.array
+
+# display the image on screen and wait for a keypress
+cv2.imshow("Image", image)
+cv2.waitKey(0)
