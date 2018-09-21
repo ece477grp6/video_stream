@@ -1,20 +1,40 @@
-# import the necessary packages
+import cv2
+import io
+import socket
+import struct
+import time
+import pickle
+import zlib
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import time
-import cv2
 
-# initialize the camera and grab a reference to the raw camera capture
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(('127.0.0.1', 8485))
+connection = client_socket.makefile('wb')
 camera = PiCamera()
 rawCapture = PiRGBArray(camera)
-
-# allow the camera to warmup
-time.sleep(0.1)
-
-# grab an image from the camera
 camera.capture(rawCapture, format="bgr")
-image = rawCapture.array
+# cam = cv2.VideoCapture(0)
 
-# display the image on screen and wait for a keypress
-cv2.imshow("Image", image)
-cv2.waitKey(0)
+# cam.set(3, 320)
+# cam.set(4, 240)
+
+img_counter = 0
+
+encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+
+while True:
+    # ret, frame = cam.read()
+    image = rawCapture.array
+    result, frame = cv2.imencode('.jpg', image, encode_param)
+#    data = zlib.compress(pickle.dumps(frame, 0))
+    data = pickle.dumps(frame, 0)
+    size = len(data)
+
+    print("{}: {}".format(img_counter, size))
+    # client_socket.sendall(struct.pack(">L", size) + data)
+    img_counter += 1
+    frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
+    cv2.imshow('ImageWindow', frame)
+
+cam.release()
