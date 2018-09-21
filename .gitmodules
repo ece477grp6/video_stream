@@ -1,3 +1,0 @@
-[submodule "python-streaming-server"]
-	path = python-streaming-server
-	url = https://github.com/golubaca/python-streaming-server.git
