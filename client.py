@@ -32,7 +32,7 @@ with PiCamera() as camera:
     rawCapture = PiRGBArray(camera, size=(1280, 720))
     time.sleep(0.1)
 
-    for camera.capture_continuous(rawCapture, format="bgr"):
+    for foo in camera.capture_continuous(rawCapture, format="bgr"):
         image = rawCapture.array
         result, frame = cv2.imencode('.jpg', image, encode_param)
         data = zlib.compress(pickle.dumps(frame, 0))
