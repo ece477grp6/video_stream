@@ -32,7 +32,7 @@
 #         rawCapture.truncate(0)
 #         cv2.imshow('ImageWindow', frame)
 #         cv2.waitKey(1)
-from datetime import datetime
+import datetime
 from threading import Thread
 import cv2
 from picamera.array import PiRGBArray
