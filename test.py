@@ -5,7 +5,7 @@ import struct
 import time
 import pickle
 import zlib
-from picamera.array import PiYUVArray()
+from picamera.array import PiRGBArray
 from picamera import PiCamera
 
 # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,3 +31,4 @@ with PiCamera() as camera:
         img_counter += 1
         rawCapture.truncate(0)
         cv2.imshow('ImageWindow', frame)
+        cv2.waitKey(1)
