@@ -38,6 +38,7 @@ import cv2
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import argparse
+import time
 
 
 class FPS:
@@ -122,7 +123,7 @@ for (i, f) in enumerate(stream):
     # clear the stream in preparation for the next frame and update
     # the FPS counter
     rawCapture.truncate(0)
-    fps.update()
+    fps.updateFrameCount()
 
     # check to see if the desired number of frames have been reached
     if i == args["num_frames"]:
