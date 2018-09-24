@@ -180,7 +180,7 @@ while fps._numFrames < args["num_frames"]:
         key = cv2.waitKey(1) & 0xFF
 
     # update the FPS counter
-    fps.upgrade()
+    fps.update()
 
 # stop the timer and display FPS information
 fps.stop()
