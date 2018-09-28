@@ -53,9 +53,9 @@ time.sleep(1)
 start_time = datetime.datetime.now()
 while True:
     current_time = datetime.datetime.now()
-    if (current_time - start_time).total_seconds > 1:
+    if (current_time - start_time).total_seconds() >= 1:
         print("FPS is {}".format(img_counter /
-                                 (current_time-start_time).total_seconds))
+                                 (current_time-start_time).total_seconds()))
         img_counter = 0
     else:
         image = stream.read()
