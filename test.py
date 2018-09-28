@@ -41,81 +41,6 @@ import argparse
 import time
 
 
-class FPS:
-    def __init__(self):
-        # store the start time, end time, and total number of frames
-        # that were examined between the start and end intervals
-        self._start = None
-        self._end = None
-        self._numFrames = 0
-
-    def start(self):
-        # start the timer
-        self._start = datetime.datetime.now()
-        return self
-
-    def stop(self):
-        # stop the timer
-        self._end = datetime.datetime.now()
-
-    def update(self):
-        # increment the total number of frames examined during the
-        # start and end intervals
-        self._numFrames += 1
-
-    def elapsed(self):
-        # return the total number of seconds between the start and
-        # end interval
-        return (self._end - self._start).total_seconds()
-
-    def fps(self):
-        # compute the (approximate) frames per second
-        return self._numFrames / self.elapsed()
-
-
-class PiVideoStream:
-    def __init__(self, resolution=(320, 240), framerate=32):
-        # initialize the camera and stream
-        self.camera = PiCamera()
-        self.camera.resolution = resolution
-        self.camera.framerate = framerate
-        self.rawCapture = PiRGBArray(self.camera, size=resolution)
-        self.stream = self.camera.capture_continuous(self.rawCapture,
-                                                     format="bgr", use_video_port=True)
-
-        # initialize the frame and the variable used to indicate
-        # if the thread should be stopped
-        self.frame = None
-        self.stopped = False
-
-    def start(self):
-                # start the thread to read frames from the video stream
-        Thread(target=self.update, args=()).start()
-        return self
-
-    def update(self):
-                # keep looping infinitely until the thread is stopped
-        for f in self.stream:
-                        # grab the frame from the stream and clear the stream in
-                        # preparation for the next frame
-            self.frame = f.array
-            self.rawCapture.truncate(0)
-
-            # if the thread indicator variable is set, stop the thread
-            # and resource camera resources
-            if self.stopped:
-                self.stream.close()
-                self.rawCapture.close()
-                self.camera.close()
-                return
-
-    def read(self):
-        return self.frame
-
-    def stop(self):
-        self.stopped = True
-
-
 arg = argparse.ArgumentParser()
 arg.add_argument("-n", "--num-frames", type=int, default=100,
                  help="# of frames to loop over for FPS test")
@@ -190,3 +115,67 @@ print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()
+
+
+import datetime
+from threading import Thread
+import cv2
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import argparse
+import time
+
+
+class FPS:
+    def __init__(self):
+        self.start = None
+        self.end = None
+        self.frameCount = 0
+
+    def start(self):
+        self.start = datetime.datetime.now()
+        return self
+
+    def stop(self):
+        self.end = datetime.datetime.now()
+    def.updateFrameCount(self):
+        self.frameCount += 1
+
+    def fps(self):
+        tmp = self.frameCount / (self.end - self.start).total_seconds
+
+
+class PiVideoStream:
+    def __init__(self, resolution=(1280, 720), framerate=30):
+        self.camera = PiCamera()
+        self.camera.resolution = resolution
+        self.camera.framerate = framerate
+        self.rawCapture = PiRGBArray(self.camera, size=resolution)
+        self.stream = self.camera.capture_continuous(
+            self.rawCapture, format="bgr")
+        self.frame = None
+        self.stopped = False
+
+    def start(self):
+        Thread(target=self.update, args=()).start()
+        return self
+
+    def update(self):
+        for f in self.stream:
+            self.frame = f.array
+            self.rawCapture.truncate(0)
+        if self.stopped:
+            self.stream.close()
+            self.rawCapture.close()
+            self.camera.close()
+            return
+
+    def read(self):
+        return self.frame
+
+    def stop(self):
+        self.stopped = True
+
+
+stream = PiVideoStream().start()
+time.sleep(1)
