@@ -5,6 +5,10 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import argparse
 import time
+import socket
+import pickle
+import zlib
+import struct
 
 
 class FPS:
@@ -19,7 +23,8 @@ class FPS:
 
     def stop(self):
         self.end = datetime.datetime.now()
-    def.updateFrameCount(self):
+
+    def updateFrameCount(self):
         self.frameCount += 1
 
     def fps(self):
