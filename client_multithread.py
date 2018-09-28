@@ -57,6 +57,7 @@ while True:
         print("FPS is {}".format(img_counter /
                                  (current_time-start_time).total_seconds()))
         img_counter = 0
+        start_time = datetime.datetime.now()
     else:
         image = stream.read()
         result, frame = cv2.imencode('.jpg', image, encode_param)
@@ -67,5 +68,3 @@ while True:
         # print("{}: {}".format(img_counter, size))
         client_socket.sendall(struct.pack(">L", size) + data)
         img_counter += 1
-        fps.updateFrameCount()
-        fps.time_elapsed()
