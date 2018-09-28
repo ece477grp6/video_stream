@@ -2,6 +2,7 @@ import datetime
 from threading import Thread
 import cv2
 from picamera.array import PiRGBArray
+from picamera.array import PiYUVArray
 from picamera import PiCamera
 import argparse
 import time
@@ -12,13 +13,13 @@ import struct
 
 
 class PiVideoStream:
-    def __init__(self, resolution=(1280, 720), framerate=30):
+    def __init__(self, resolution=(720, 480), framerate=24):
         self.camera = PiCamera()
         self.camera.resolution = resolution
         self.camera.framerate = framerate
-        self.rawCapture = PiRGBArray(self.camera, size=resolution)
+        self.rawCapture = PiYUVArray(self.camera, size=resolution)
         self.stream = self.camera.capture_continuous(
-            self.rawCapture, format="bgr")
+            self.rawCapture, format="yuv")
         self.frame = None
         self.stopped = False
 
@@ -52,19 +53,19 @@ stream = PiVideoStream().start()
 time.sleep(1)
 start_time = datetime.datetime.now()
 while True:
-    current_time = datetime.datetime.now()
-    if (current_time - start_time).total_seconds() >= 1:
-        print("FPS is {}".format(img_counter /
-                                 (current_time-start_time).total_seconds()))
-        img_counter = 0
-        start_time = datetime.datetime.now()
-    else:
-        image = stream.read()
-        result, frame = cv2.imencode('.jpg', image, encode_param)
-        data = zlib.compress(pickle.dumps(frame, 0))
-        data = pickle.dumps(frame, 0)
-        size = len(data)
+    # current_time = datetime.datetime.now()
+    # if (current_time - start_time).total_seconds() >= 1:
+    #     print("FPS is {}".format(img_counter /
+    #                              (current_time-start_time).total_seconds()))
+    #     img_counter = 0
+    #     start_time = datetime.datetime.now()
+    # else:
+    image = stream.read()
+    result, frame = cv2.imencode('.jpg', image, encode_param)
+    data = zlib.compress(pickle.dumps(frame, 0))
+    data = pickle.dumps(frame, 0)
+    size = len(data)
 
-        # print("{}: {}".format(img_counter, size))
-        client_socket.sendall(struct.pack(">L", size) + data)
-        img_counter += 1
+    # print("{}: {}".format(img_counter, size))
+    client_socket.sendall(struct.pack(">L", size) + data)
+    img_counter += 1
