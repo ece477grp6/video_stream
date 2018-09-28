@@ -7,7 +7,7 @@ import pickle
 import zlib
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-
+import datetime
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect(('127.0.0.1', 8485))
 connection = client_socket.makefile('wb')
@@ -26,6 +26,7 @@ encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 #     print("{}: {}".format(img_counter, size))
 #     client_socket.sendall(struct.pack(">L", size) + data)
 #     img_counter += 1
+start_time = datetime.datetime.now()
 with PiCamera() as camera:
     camera.resolution = (1280, 720)
     camera.framerate = 24
@@ -33,13 +34,20 @@ with PiCamera() as camera:
     time.sleep(0.1)
 
     for foo in camera.capture_continuous(rawCapture, format="bgr"):
-        image = rawCapture.array
-        result, frame = cv2.imencode('.jpg', image, encode_param)
-        data = zlib.compress(pickle.dumps(frame, 0))
-        data = pickle.dumps(frame, 0)
-        size = len(data)
+        current_time = datetime.datetime.now()
+        if (current_time - start_time).total_seconds() >= 1:
+            print("FPS is {}".format(img_counter /
+                                     (current_time-start_time).total_seconds()))
+            img_counter = 0
+            start_time = datetime.datetime.now()
+        else:
+            image = rawCapture.array
+            result, frame = cv2.imencode('.jpg', image, encode_param)
+            data = zlib.compress(pickle.dumps(frame, 0))
+            data = pickle.dumps(frame, 0)
+            size = len(data)
 
-        print("{}: {}".format(img_counter, size))
-        client_socket.sendall(struct.pack(">L", size) + data)
-        img_counter += 1
-        rawCapture.truncate(0)
+            print("{}: {}".format(img_counter, size))
+            client_socket.sendall(struct.pack(">L", size) + data)
+            img_counter += 1
+            rawCapture.truncate(0)
