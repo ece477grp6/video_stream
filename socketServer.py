@@ -27,7 +27,7 @@ class TcpServer(threading.Thread):
     def run(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         logging.info("Socket created for " + self.portname)
-        self.s.bind(HOST, self.port)
+        self.s.bind((HOST, self.port))
         logging.info('Socket bind complete for ' + self.portname)
         self.s.listen(10)
         logging.info('Socket now listening for ' + self.portname)
