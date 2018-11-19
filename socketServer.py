@@ -78,8 +78,8 @@ class VideoServer(TcpServer):
 
 class StartServer():
     def __init__(self, recvServer, sendServer):
-        recvServer.run()
-        sendServer.run()
+        # recvServer.run()
+        # sendServer.run()
         recvThread = threading.Thread(target=recvServer.recvData())
         sendThread = threading.Thread(target=sendServer.sendData())
         recvThread.start()
