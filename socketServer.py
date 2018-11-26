@@ -3,6 +3,7 @@ import socket
 import os
 import logging
 import threading
+import time
 HOST = ''
 VIDEO_IN_PORT = 8585
 VIDEO_OUT_PORT = 8586
@@ -25,6 +26,8 @@ class TcpServer(threading.Thread):
         self.port = port
 
     def run(self):
+        self.portLock = threading.Lock()
+        self.portLock.acquire()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         logging.info("Socket created for " + self.portname)
         self.s.bind((HOST, self.port))
@@ -32,27 +35,76 @@ class TcpServer(threading.Thread):
         self.s.listen(10)
         logging.info('Socket now listening for ' + self.portname)
         self.conn, self.addr = self.s.accept()
+        logging.info(self._name + " Client connected from " +
+                     self.addr[0] + ":" + str(self.addr[1]))
+        self.portLock.release()
 
 
 class TextServer(TcpServer):
     data = b''
-    lock = threading.Lock()
+    lockRecv = threading.Lock()
+    lockSend = threading.Lock()
 
     def recvData(self):
-        self.lock.acquire()
+        # while True:
+        #     try:
+        #         self.conn
+        #     except:
+        #         pass
+        #     else:
+        #         logging.info(self._name + " Client connected from " +
+        #                      self.addr[0] + ":" + str(self.addr[1]))
+        #         break
+        self.portLock.acquire
         try:
-            self.data = self.s.recv(1024)
-            logging.info("Received text data")
-        finally:
-            self.lock.release()
+            while True:
+                self.lockSend.acquire()
+                try:
+                    self.lockRecv.acquire()
+                    try:
+                        self.data = self.conn.recv(1024)
+                    except:
+                        continue
+                    else:
+                        logging.info("Received text data")
+                        self.lockRecv.release()
+                        print("RELEASE")
+                except:
+                    continue
+                else:
+                    pass
+        except:
+            pass
+        else:
+            self.portLock.release()
 
     def sendData(self):
-        self.lock.acquire()
+        # while True:
+        #     try:
+        #         self.conn
+        #     except:
+        #         pass
+        #     else:
+        #         logging.info("Client connected from " +
+        #                      self.addr[0] + " on port " + str(self.addr[1]))
+        #         break
+        self.portLock.acquire()
         try:
-            self.s.sendall(self.data)
-            logging.info("Sent text data")
-        finally:
-            self.lock.release()
+            while True:
+                self.lockRecv.acquire()
+                try:
+                    # self.lockSend.acquire()
+                    self.conn.sendall(self.data)
+                    logging.info("Sent text data")
+                except:
+                    continue
+                else:
+                    self.lockSend.release()
+                    self.lockRecv.release()
+        except:
+            pass
+        else:
+            self.portLock.release()
 
 
 class VideoServer(TcpServer):
@@ -60,28 +112,51 @@ class VideoServer(TcpServer):
     lock = threading.Lock()
 
     def recvData(self):
-        self.lock.acquire()
-        try:
-            self.data = self.s.recv(4096)
-            logging.info("Received video data")
-        finally:
-            self.lock.release()
+        while True:
+            try:
+                self.conn
+            except:
+                pass
+            else:
+                logging.info("Client connected from " +
+                             self.addr[0] + " on port " + str(self.addr[1]))
+                break
+        while True:
+            self.lock.acquire()
+            try:
+                self.data = self.conn.recv(4096)
+                logging.info("Received video data")
+            finally:
+                self.lock.release()
 
     def sendData(self):
-        self.lock.acquire()
-        try:
-            self.s.sendall(self.data)
-            logging.info("Sent text data")
-        finally:
-            self.lock.release()
+        while True:
+            try:
+                self.conn
+            except:
+                pass
+            else:
+                logging.info("Client connected from " +
+                             self.addr[0] + " on port " + str(self.addr[1]))
+                break
+        while True:
+            self.lock.acquire()
+            try:
+                self.conn.sendall(self.data)
+                logging.info("Sent text data")
+            finally:
+                self.lock.release()
 
 
 class StartServer():
     def __init__(self, recvServer, sendServer):
         # recvServer.run()
         # sendServer.run()
-        recvThread = threading.Thread(target=recvServer.recvData())
-        sendThread = threading.Thread(target=sendServer.sendData())
+        # print(recvServer.conn)
+        recvThread = threading.Thread(target=recvServer.recvData)
+        sendThread = threading.Thread(target=sendServer.sendData)
+        # recvThread.daemon = True
+        # sendThread.daemon = True
         recvThread.start()
         sendThread.start()
 
@@ -95,12 +170,18 @@ def main():
     textSend = TextServer(TEXT_OUT_PORT)
     videoRecv = VideoServer(VIDEO_IN_PORT)
     videoSend = VideoServer(VIDEO_OUT_PORT)
+    textRecv.daemon = True
+    textSend.daemon = True
+    videoRecv.daemon = True
+    videoSend.daemon = True
     textRecv.start()
     textSend.start()
     videoRecv.start()
     videoSend.start()
+    # while 1:
+    #     pass
     textServer = StartServer(textRecv, textSend)
-    videoServer = StartServer(videoRecv, videoSend)
+    # videoServer = StartServer(videoRecv, videoSend)
 
 
 if __name__ == '__main__':
