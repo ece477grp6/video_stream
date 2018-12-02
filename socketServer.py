@@ -102,7 +102,7 @@ class TextServer(TcpServer):
                     # self.lockSend.acquire()
                     self.conn.sendall(self.data)
                     # logging.info("Sent text data")
-                    print("Sent text data"))
+                    print("Sent text data")
                 except:
                     continue
                 else:
