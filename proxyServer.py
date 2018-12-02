@@ -28,13 +28,18 @@ class TcpServer(threading.Thread):
 
     def run(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        logging.info("Socket created for " + self.portname)
+        # logging.info("Socket created for " + self.portname)
+        print("Socket created for " + self.portname)
         self.s.bind((HOST, self.port))
-        logging.info('Socket bind complete for ' + self.portname)
+        # logging.info('Socket bind complete for ' + self.portname)
+        print('Socket bind complete for ' + self.portname)
         self.s.listen(10)
-        logging.info('Socket now listening for ' + self.portname)
+        # logging.info('Socket now listening for ' + self.portname)
+        print('Socket now listening for ' + self.portname)
         self.conn, self.addr = self.s.accept()
-        logging.info(self._name + " Client connected from " +
+        # logging.info(self._name + " Client connected from " +
+        #              self.addr[0] + ":" + str(self.addr[1]))
+        print(self._name + " Client connected from " +
                      self.addr[0] + ":" + str(self.addr[1]))
         self.connected = True
 
@@ -45,15 +50,20 @@ class TextServer():
             if recvServer.connected and sendServer.connected:
                 try:
                     self.data = recvServer.conn.recv(1024)
-                    logging.info("Recieved text data " + str(self.data))
+                    # logging.info("Recieved text data " + str(self.data))
+                    print("Recieved text data " + str(self.data))
                     sendServer.conn.sendall(self.data)
-                    logging.info("Text data sent " + str(self.data))
+                    # logging.info("Text data sent " + str(self.data))
+                    print("Text data sent " + str(self.data))
                     self.data = sendServer.conn.recv(1024)
-                    logging.info("Recieved reply " + str(self.data))
+                    # logging.info("Recieved reply " + str(self.data))
+                    print("Recieved reply " + str(self.data))
                     recvServer.conn.sendall(self.data)
-                    logging.info("Text reply sent " + str(self.data))
+                    # logging.info("Text reply sent " + str(self.data))
+                    print("Text reply sent " + str(self.data))
                 except Exception as e:
-                    logging.info(e)
+                    # logging.info(e)
+                    print(str(e))
 
 
 class VideoServer():
@@ -62,11 +72,14 @@ class VideoServer():
             if recvServer.connected and sendServer.connected:
                 try:
                     self.data = recvServer.conn.recv(4096)
-                    logging.info("Recieved text data " + str(self.data))
+                    # logging.info("Recieved text data " + str(self.data))
+                    print("Recieved text data " + str(self.data))
                     sendServer.conn.sendall(self.data)
-                    logging.info("Text data sent " + str(self.data))
+                    # logging.info("Text data sent " + str(self.data))
+                    print("Text data sent " + str(self.data))
                 except Exception as e:
-                    logging.info(e)
+                    # logging.info(e)
+                    print(str(e))
 
 
 def main():
