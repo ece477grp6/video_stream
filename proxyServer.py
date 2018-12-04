@@ -46,17 +46,16 @@ class TcpServer(threading.Thread):
 
 class TextServer():
     def startForward(self, recvServer, sendServer):
-        delayFlag = True;
+        # delayFlag = True
         while True:
             if recvServer.connected and sendServer.connected:
                 try:
                     self.data = recvServer.conn.recv(1024)
                     # logging.info("Recieved text data " + str(self.data))
                     print("Recieved text data " + str(self.data))
-                    if(delayFlag){
-                        time.sleep(1)
-                        delayFlag = False
-                    }
+                    # recvServer.conn.sendall(b'OK')
+                    # print("SEND OK")
+                    time.sleep(1)
                     sendServer.conn.sendall(self.data)
                     # logging.info("Text data sent " + str(self.data))
                     print("Text data sent " + str(self.data))
@@ -99,8 +98,11 @@ def main():
     videoRecv.daemon = True
     videoSend.daemon = True
     textRecv.start()
+    time.sleep(0.1)
     textSend.start()
+    time.sleep(0.1)
     videoRecv.start()
+    time.sleep(0.1)
     videoSend.start()
     textServer = threading.Thread(
         target=TextServer().startForward(textRecv, textSend))
