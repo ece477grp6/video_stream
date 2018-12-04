@@ -1,25 +1,33 @@
-import sys
+import numpy as np
+import cv2
 import socket
-import select
 
-HOST = ''
-SOCKET_LIST = []
-RECV_BUFFER = 4096
-PORT = 8485
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(('10.0.1.190', 8585))
+connection = client_socket.makefile('wb')
+img_counter = 0
+encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+stream = cv2.VideoCapture(0)
+time.sleep(1)
+start_time = datetime.datetime.now()
 
+while True:
+    # current_time = datetime.datetime.now()
+    # if (current_time - start_time).total_seconds() >= 1:
+    #     print("FPS is {}".format(img_counter /
+    #                              (current_time-start_time).total_seconds()))
+    #     img_counter = 0
+    #     start_time = datetime.datetime.now()
+    # else:
+    image = stream.read()
+    result, frame = cv2.imencode('.jpg', image, encode_param)
+    data = zlib.compress(pickle.dumps(frame, 0))
+    data = pickle.dumps(frame, 0)
+    size = len(data)
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((HOST, PORT))
-print('Socket bind complete for ')
-s.listen(10)
-print('Socket now listening for ')
-conn, addr = s.accept()
-print(conn)
-print(addr)
-print(addr[1a])
-try:
-    pass
-except expression as identifier:
-    pass
-else:
-    pass
+    # print("{}: {}".format(img_counter, size))
+    client_socket.sendall(struct.pack(">L", size) + data)
+    img_counter += 1
+
+# When everything done, release the capture
+cap.release()

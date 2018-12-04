@@ -28,6 +28,7 @@ class TcpServer(threading.Thread):
 
     def run(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # logging.info("Socket created for " + self.portname)
         print("Socket created for " + self.portname)
         self.s.bind((HOST, self.port))
@@ -40,7 +41,7 @@ class TcpServer(threading.Thread):
         # logging.info(self._name + " Client connected from " +
         #              self.addr[0] + ":" + str(self.addr[1]))
         print(self._name + " Client connected from " +
-                     self.addr[0] + ":" + str(self.addr[1]))
+              self.addr[0] + ":" + str(self.addr[1]))
         self.connected = True
 
 

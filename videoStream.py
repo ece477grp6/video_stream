@@ -7,15 +7,14 @@ import numpy as np
 import struct  # new
 import zlib
 import datetime
-from threading import Thread
 
 
-def startVideoStream(HOST='', PORT=8485):
+def startVideoStream(HOST='10.0.1.190', PORT=8586):
     connection = startServer(HOST, PORT)
-    frame = recieveVideo(connection)
+    recieveVideo(connection)
 
 
-def startServer(HOST='', PORT=8485):
+def startServer(HOST='73.103.73.130', PORT=8586):
     """Starts TCP Server on host
          HOST (str, optional): Defaults to ''. 
          PORT (int, optional): Defaults to 8485. TCP port
@@ -25,17 +24,11 @@ def startServer(HOST='', PORT=8485):
      """
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print('Socket Created')
-    s.bind((HOST, PORT))
-    print("Socket bind complete")
-    s.listen(10)
-    print("Socket now listening")
+    s.connect((HOST, PORT))
     return s
-    conn, addr = s.accept()
 
 
-def recieveVideo(s):
-    conn, addr = s.accept()
+def recieveVideo(connection):
     data = b""
     payload_size = struct.calcsize(">L")
     print("payload_size: {}".format(payload_size))
@@ -67,7 +60,8 @@ def recieveVideo(s):
                 frame_data, fix_imports=True, encoding="bytes")
             frame = cv2.imdecode(frame, cv2.IMREAD_ANYCOLOR)
             frame = cv2.cvtColor(frame, cv2.COLOR_YUV2BGR)
-            return frame
+            cv2.imshow("Video Stream", frame)
+            cv2.waitKey(1)
 
 
 def main():
