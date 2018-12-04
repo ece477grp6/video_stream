@@ -29,13 +29,18 @@ class TcpServer(threading.Thread):
         self.portLock = threading.Lock()
         self.portLock.acquire()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        logging.info("Socket created for " + self.portname)
+        # logging.info("Socket created for " + self.portname)
+        print("Socket created for " + self.portname)
         self.s.bind((HOST, self.port))
-        logging.info('Socket bind complete for ' + self.portname)
+        # logging.info('Socket bind complete for ' + self.portname)
+        print('Socket bind complete for ' + self.portname)
         self.s.listen(10)
-        logging.info('Socket now listening for ' + self.portname)
+        # logging.info('Socket now listening for ' + self.portname)
+        print('Socket now listening for ' + self.portname)
         self.conn, self.addr = self.s.accept()
-        logging.info(self._name + " Client connected from " +
+        # logging.info(self._name + " Client connected from " +
+        #              self.addr[0] + ":" + str(self.addr[1]))
+        print(self._name + " Client connected from " +
                      self.addr[0] + ":" + str(self.addr[1]))
         self.portLock.release()
 
@@ -66,7 +71,8 @@ class TextServer(TcpServer):
                     except:
                         continue
                     else:
-                        logging.info("Received text data")
+                        # logging.info("Received text data")
+                        print("Received text data")
                         self.lockRecv.release()
                         print("RELEASE")
                 except:
@@ -95,7 +101,8 @@ class TextServer(TcpServer):
                 try:
                     # self.lockSend.acquire()
                     self.conn.sendall(self.data)
-                    logging.info("Sent text data")
+                    # logging.info("Sent text data")
+                    print("Sent text data")
                 except:
                     continue
                 else:
@@ -118,14 +125,17 @@ class VideoServer(TcpServer):
             except:
                 pass
             else:
-                logging.info("Client connected from " +
+                # logging.info("Client connected from " +
+                #              self.addr[0] + " on port " + str(self.addr[1]))
+                print("Client connected from " +
                              self.addr[0] + " on port " + str(self.addr[1]))
                 break
         while True:
             self.lock.acquire()
             try:
                 self.data = self.conn.recv(4096)
-                logging.info("Received video data")
+                # logging.info("Received video data")
+                print("Received video data")
             finally:
                 self.lock.release()
 
@@ -136,14 +146,17 @@ class VideoServer(TcpServer):
             except:
                 pass
             else:
-                logging.info("Client connected from " +
+                # logging.info("Client connected from " +
+                #              self.addr[0] + " on port " + str(self.addr[1]))
+                print("Client connected from " +
                              self.addr[0] + " on port " + str(self.addr[1]))
                 break
         while True:
             self.lock.acquire()
             try:
                 self.conn.sendall(self.data)
-                logging.info("Sent text data")
+                # logging.info("Sent text data")
+                print("Sent text data")
             finally:
                 self.lock.release()
 

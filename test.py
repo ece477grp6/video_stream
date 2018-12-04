@@ -17,3 +17,9 @@ conn, addr = s.accept()
 print(conn)
 print(addr)
 print(addr[1a])
+try:
+    pass
+except expression as identifier:
+    pass
+else:
+    pass
