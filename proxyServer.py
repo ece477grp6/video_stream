@@ -45,25 +45,30 @@ class TcpServer(threading.Thread):
         self.connected = True
 
 
-class TextServer():
-    def startForward(self, recvServer, sendServer):
+class TextServer(threading.Thread):
+    def __init__(self, recvServer, sendServer):
+        self.recvServer = recvServer
+        self.sendServer = sendServer
+        threading.Thread.__init__(self)
+
+    def run(self):
         # delayFlag = True
         while True:
-            if recvServer.connected and sendServer.connected:
+            if self.recvServer.connected and self.sendServer.connected:
                 try:
-                    self.data = recvServer.conn.recv(1024)
+                    self.data = self.recvServer.conn.recv(1024)
                     # logging.info("Recieved text data " + str(self.data))
                     print("Recieved text data " + str(self.data))
                     # recvServer.conn.sendall(b'OK')
                     # print("SEND OK")
                     time.sleep(1)
-                    sendServer.conn.sendall(self.data)
+                    self.sendServer.conn.sendall(self.data)
                     # logging.info("Text data sent " + str(self.data))
                     print("Text data sent " + str(self.data))
-                    self.data = sendServer.conn.recv(1024)
+                    self.data = self.sendServer.conn.recv(1024)
                     # logging.info("Recieved reply " + str(self.data))
                     print("Recieved reply " + str(self.data))
-                    recvServer.conn.sendall(self.data)
+                    self.recvServer.conn.sendall(self.data)
                     # logging.info("Text reply sent " + str(self.data))
                     print("Text reply sent " + str(self.data))
                 except Exception as e:
@@ -71,17 +76,22 @@ class TextServer():
                     print(str(e))
 
 
-class VideoServer():
-    def startForward(self, recvServer, sendServer):
+class VideoServer(threading.Thread):
+    def __init__(self, recvServer, sendServer):
+        threading.Thread.__init__(self)
+        self.recvServer = recvServer
+        self.sendServer = sendServer
+    def run(self):
         while True:
-            if recvServer.connected and sendServer.connected:
+            if self.recvServer.connected and self.sendServer.connected:
                 try:
-                    self.data = recvServer.conn.recv(4096)
+                    # print("RECV")
+                    self.data = self.recvServer.conn.recv(4096)
                     # logging.info("Recieved text data " + str(self.data))
-                    print("Recieved text data " + str(self.data))
-                    sendServer.conn.sendall(self.data)
+                    print("Recieved video data ")
+                    self.sendServer.conn.sendall(self.data)
                     # logging.info("Text data sent " + str(self.data))
-                    print("Text data sent " + str(self.data))
+                    print("Video data sent ")
                 except Exception as e:
                     # logging.info(e)
                     print(str(e))
@@ -105,14 +115,18 @@ def main():
     videoRecv.start()
     time.sleep(0.1)
     videoSend.start()
-    textServer = threading.Thread(
-        target=TextServer().startForward(textRecv, textSend))
-    videoServer = threading.Thread(
-        target=TextServer().startForward(videoRecv, videoSend))
+    # textServer = threading.Thread(
+    #     target=TextServer().startForward(textRecv, textSend))
+    # videoServer = threading.Thread(
+    #     target=VideoServer().startForward(videoRecv, videoSend))
+    videoServer = VideoServer(videoRecv, videoSend)
+    textServer = TextServer(textRecv, textSend)
     textServer.daemon = True
     videoServer.daemon = True
-    textServer.start()
     videoServer.start()
+    textServer.start()
+    while True:
+        pass
 
 
 if __name__ == "__main__":
